@@ -20,13 +20,12 @@ export class TodoListComponent implements OnInit {
     private todoService: TodoService,
     private toastr: ToastrService,
     private _route: ActivatedRoute,
-    private _router: Router) {
-    this.todoService.getTodos();
-  }
+    private _router: Router) { }
 
   ngOnInit() {
 
     const path = this._route.routeConfig.path;
+    console.log(path);
 
     if ( path === 'active' ) {
       this.todoService.filterTodos(false);

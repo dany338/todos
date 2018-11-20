@@ -88,6 +88,13 @@ export class TodoService {
   }
 
   public filterTodos(completed: boolean) {
+    const items = localStorage.getItem('todosList');
+
+    if (items !== null && items !== undefined) {
+      let todosItems = JSON.parse(items);
+      todosItems = [...todosItems];
+      this.todosList = todosItems;
+    }
     const todosList = this.todosList.filter(todo => todo.completed === completed);
     this.todosList = todosList;
   }
