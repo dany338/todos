@@ -1,0 +1,6 @@
+<div class="example-button-row">
+  <a mat-button [routerLink]="['']" [routerLinkActive]="['active-link']">All</a>
+  <a mat-button [routerLink]="['/active']" [routerLinkActive]="['active-link']">Active</a>
+  <a mat-button [routerLink]="['/completed']" [routerLinkActive]="['active-link']">Completed</a>
+  <a mat-button (click)="clearCompleted($event)">Clear completed</a>
+</div>

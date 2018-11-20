@@ -1,0 +1,23 @@
+<app-todo-actions (clear)="onClear($event)"></app-todo-actions>
+<mat-divider></mat-divider>
+<div class="example-container">
+  <mat-form-field>
+    <mat-icon [class]=" (completed) ? 'mat-icon material-icons selected' : 'mat-icon material-icons'" matPrefix (click)="selectAllTodos()">keyboard_arrow_down</mat-icon>
+    <input #newTodo matInput placeholder="What needs to be done?"
+    (keyup.enter)="addTodo(newTodo.value, $event); newTodo.value='';"
+    (blur)="addTodo(newTodo.value, $event); newTodo.value='';" autofocus>
+  </mat-form-field>
+</div>
+<mat-divider></mat-divider>
+<mat-list>
+  <mat-list-item #listItem item="0" edit="0" *ngFor="let todo of todosList; let i = index" (mouseenter)="listItem.item = 1;" (mouseleave)="listItem.item = 0;">
+    <mat-icon *ngIf="!listItem.edit" [class]=" (todo.completed) ? 'mat-icon mat-list-icon material-icons completed-icon' : 'mat-icon mat-list-icon material-icons active-icon'" (click)="selectedTodo(todo)" mat-list-icon>{{todo.completed ? 'check_circle_outline' : 'radio_button_unchecked'}}</mat-icon>
+    <h4 mat-line *ngIf="!listItem.edit" (dblclick)="listItem.edit = 1;" [class]=" (todo.completed) ? 'completed' : 'active'">{{todo.title}}</h4>
+    <mat-form-field *ngIf="listItem.edit">
+      <input #editItem matInput [value]="todo.title" (keyup.enter)="editTodo(todo, editItem.value, $event); listItem.edit = 0;" (blur)="editTodo(todo, editItem.value, $event); listItem.edit = 0;" autofocus>
+    </mat-form-field>
+    <button mat-button *ngIf="!listItem.edit"><mat-icon matSuffix (click)="deleteTodo(todo)" [class]="  (listItem.item) ? 'mat-icon mat-list-icon material-icons mat-list-icon-clear' : 'mat-icon mat-list-icon material-icons hide'" mat-list-icon>clear</mat-icon></button>
+  </mat-list-item>
+</mat-list>
+<mat-divider></mat-divider>
+<app-todo-actions (clear)="onClear($event)"></app-todo-actions>

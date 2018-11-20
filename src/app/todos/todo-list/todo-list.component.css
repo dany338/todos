@@ -1,0 +1,49 @@
+.todo-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.active {
+  cursor: pointer !important;
+  word-break: break-all;
+  padding: 15px 15px 15px 60px;
+  display: block;
+  line-height: 1.2;
+  transition: color 0.4s;
+}
+
+.active-icon {
+  cursor: pointer !important;
+  color: rgba(0, 0, 0, 0.54);
+}
+
+.completed-icon {
+  cursor: pointer !important;
+  color: #d9d9d9 !important;
+}
+
+.mat-list-icon-clear {
+  cursor: pointer !important;
+  color: red !important;
+  text-align: center;
+  position: relative;
+}
+
+.completed {
+  cursor: pointer !important;
+  color: #d9d9d9 !important;
+  text-decoration: line-through;
+}
+
+.mat-list-icon {
+  color: rgba(0, 0, 0, 0.54);
+}
+
+.hide {
+  display: none;
+}
+
+.selected {
+  color: #d9d9d9 !important;
+}
