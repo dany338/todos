@@ -25,59 +25,89 @@ export class TodoListComponent implements OnInit {
   ngOnInit() {
 
     const path = this._route.routeConfig.path;
-    console.log(path);
 
     if ( path === 'active' ) {
-      this.todoService.filterTodos(false);
+      this.initializeTodos(this.todoService.filterTodos(false));
     } else if ( path === 'completed' ) {
-      this.todoService.filterTodos(true);
+      this.initializeTodos(this.todoService.filterTodos(true));
     } else if ( path === '' ) {
-      this.todoService.getTodos();
+      if (this.todoService.todosList.length > 0 ) {
+        this.initializeTodos(this.todoService.getFromLocal());
+      } else {
+        // Con la api del listado de todos se cargaron los datos en la api propio que contiene una tabla todo con la estructura requerida
+        this.todoService.getTodos().subscribe((todos: Array<Todo>) => {
+          this.todoService.setToLocal(todos);
+          this.initializeTodos(todos);
+        });
+      }
     }
-
-    setTimeout(() => {
-      this.initializeTodos();
-    }, 900);
   }
 
   onClear(message: string) {
     this.toastr.success('Clear Completed', message);
-    this.todoService.completedTodos(false);
-    setTimeout(() => {
-      this.initializeTodos();
-    }, 900);
+    this.todoService.clearCompleted(true).subscribe((todos: Array<Todo>) => {
+      this.todoService.setToLocal(todos);
+      this.initializeTodos(todos);
+    }, (err) => {
+      console.log(err);
+    });
   }
 
-  initializeTodos() {
-    this.todosList = this.todoService.todosList;
+  onGetTodos(message: string) {
+    this.toastr.success('Get Todos', message);
+    this.todoService.getTodosFormJSONPlaceholder().subscribe((todos: Array<Todo>) => {
+      this.todoService.setToLocal(todos);
+      this.initializeTodos(todos);
+      this.todoService.loadTodosToServer(todos).subscribe((result: Array<Todo>) => {
+        console.log(result);
+      }, (err) => {
+        console.log(err);
+      });
+    }, (err) => {
+      console.log(err);
+    });
+  }
+
+  initializeTodos(todos: Array<Todo>) {
+    this.todosList = todos;
   }
 
   selectAllTodos() {
     this.completed = !this.completed;
-    this.todoService.completedTodos(this.completed);
-    setTimeout(() => {
-      this.initializeTodos();
-    }, 900);
+    this.todoService.updateCompletedTodos(this.todosList, this.completed).subscribe((result) => {
+      console.log(result);
+      this.initializeTodos(this.todoService.completedTodos(this.completed));
+      this.toastr.success('Todo Completed', 'successfully completed todos');
+    }, (err) => {
+      console.log(err);
+    });
   }
 
   selectedTodo(todo: Todo) {
     todo.completed = !todo.completed;
-    this.todoService.completedTodo(todo);
-    setTimeout(() => {
-      this.initializeTodos();
-    }, 900);
+    this.todoService.updateTodo(todo).subscribe((result) => {
+      console.log(result);
+      const todoItem = Todo.fromJson(result);
+      this.todoService.completedTodo(todoItem);
+      this.toastr.success('Todo Completed', 'successfully completed todo');
+    }, (err) => {
+      console.log(err);
+    });
   }
 
   addTodo(task: any, $event: any) {
     $event.preventDefault();
     $event.stopPropagation();
-    console.log('entro' + task);
+
     if (task.trim() !== '') {
-      this.todoService.addTodo(task);
-      this.showSuccess();
-      setTimeout(() => {
-        this.initializeTodos();
-      }, 900);
+      this.todoService.addTodo(task).subscribe((todo) => {
+        const todoItem = Todo.fromJson(todo);
+        this.todoService.saveLocally(todoItem);
+        this.todosList = [todoItem, ...this.todosList];
+        this.showSuccess();
+      }, (err) => {
+        console.log(err);
+      });
     } else {
       this.showError();
     }
@@ -89,8 +119,16 @@ export class TodoListComponent implements OnInit {
 
     if (title.trim() !== '') {
       todo.title = title;
-      this.todoService.updateTodo(todo);
-      this.toastr.success('Task Edited [' + title + ']', 'successfully edited task');
+      this.todoService.updateTodo(todo).subscribe((result) => {
+        console.log(result);
+        const todoItem = Todo.fromJson(result);
+        this.todoService.updatedLocally(todoItem);
+        const index = this.todosList.findIndex(task => task.id === todo.id);
+        this.todosList = [...this.todosList.slice(0, index), todo, ...this.todosList.slice(index + 1)];
+        this.toastr.success('Task Edited [' + title + ']', 'successfully edited task');
+      }, (err) => {
+        console.log(err);
+      });
     } else {
       this.toastr.error('Task Not Edited', 'error edited task');
     }
@@ -100,11 +138,15 @@ export class TodoListComponent implements OnInit {
     if (!todo.id) {
       this.toastr.error('Task Not Deleted', 'error deleted task');
     } else {
-      this.toastr.success('Task Deleted [' + todo.id + ']', 'successfully deleted task');
-      this.todoService.deleteTodo(todo);
-      setTimeout(() => {
-        this.initializeTodos();
-      }, 900);
+      this.todoService.deleteTodo(todo).subscribe((result) => {
+        console.log(result);
+        this.todoService.deleteLocally(todo);
+        const index = this.todosList.findIndex(task => task.id === todo.id);
+        this.todosList = [...this.todosList.slice(0, index), ...this.todosList.slice(index + 1)];
+        this.toastr.success('Task Deleted [' + todo.id + ']', 'successfully deleted task');
+      }, (err) => {
+        console.log(err);
+      });
     }
   }
 

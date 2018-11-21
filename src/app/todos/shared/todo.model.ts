@@ -10,6 +10,6 @@ export class Todo {
     if (!data.id) {
       throw(new Error('Invalid argument: argument structure db not macth with model'));
     }
-    return new Todo(data.newTodo.userId, data.id, data.newTodo.title, data.newTodo.completed);
+    return new Todo(data.userId, data.id, data.title, data.completed);
   }
 }

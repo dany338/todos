@@ -7,7 +7,10 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 })
 export class TodoActionsComponent implements OnInit {
 
+  itemLeft: String = '';
   @Output() clear: EventEmitter<string> = new EventEmitter<string>();
+
+  @Output() getTodos: EventEmitter<string> = new EventEmitter<string>();
   constructor() { }
 
   ngOnInit() {
@@ -15,6 +18,10 @@ export class TodoActionsComponent implements OnInit {
 
   clearCompleted() {
     this.clear.emit('All cleaned satisfactorily');
+  }
+
+  getTodosJSONPlaceholder() {
+    this.getTodos.emit('All todos get satisfactorily');
   }
 
 }
