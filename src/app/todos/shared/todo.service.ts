@@ -21,7 +21,7 @@ export class TodoService {
   }
 
   public getTodos()  {
-    return this.http.get('https://colorsandgloss.com/todosapi/api/web/v1/todos/index');
+    return this.http.get('https://colorsandgloss.com/todosapi/api/web/v1/todos/search');
   }
 
   public addTodo(title: string) {
@@ -84,7 +84,7 @@ export class TodoService {
 
   public completedTodos(completed: boolean): Array<Todo> {
     const todosList = this.todosList.filter(todo => todo.completed !== completed);
-
+    console.log(todosList);
     for (let index = 0; index < todosList.length; index++) {
       const todo = todosList[index];
       todo.completed = completed;

@@ -18,11 +18,15 @@ export class TodoActionsComponent implements OnInit {
     console.log(this.itemLeft);
   }
 
-  clearCompleted() {
+  clearCompleted($event: any) {
+    $event.preventDefault();
+    $event.stopPropagation();
     this.clear.emit('All cleaned satisfactorily');
   }
 
-  getTodosJSONPlaceholder() {
+  getTodosJSONPlaceholder($event: any) {
+    $event.preventDefault();
+    $event.stopPropagation();
     this.getTodos.emit('All todos get satisfactorily');
   }
 
