@@ -11,7 +11,14 @@ export class TodoService {
   constructor(private http: HttpClient) { }
 
   public getTodos()  {
-    return this.http.get('https://jsonplaceholder.typicode.com/todos').subscribe((todos: Array<Todo>) => {
+    return this.http.get('https://colorsandgloss.com/todosapi/api/web/v1/todos/index').subscribe((todos: Array<Todo>) => {
+      /*this.http.post('https://colorsandgloss.com/todosapi/api/web/v1/todos/load-todos', {todos: todos})
+      .subscribe((result) => {
+        console.log(result);
+      }, (err) => {
+        console.log(err);
+      });*/
+      // Con la api del listado de todos se cargaron los datos en la api propio que contiene una tabla todo con la estructura requerida
       this.getFromLocal(todos);
     });
   }
@@ -23,9 +30,12 @@ export class TodoService {
     const completed = false;
 
     const todo = new Todo(userId, id, title, completed);
-    const newTodo = {userId: userId, title: title, completed: completed};
 
-    return this.http.post('https://jsonplaceholder.typicode.com/todos', {newTodo})
+    return this.http.post('https://colorsandgloss.com/todosapi/api/web/v1/todos/create', {
+      userId: userId,
+      title: title,
+      completed: completed
+    })
     .subscribe((result) => {
       this.saveLocally(todo);
     }, (err) => {
@@ -37,25 +47,30 @@ export class TodoService {
     const todoId = todo.id;
     const newTodo = JSON.stringify( todo );
 
-    /*return this.http.put('https://jsonplaceholder.typicode.com/todos/' + todoId, {newTodo})
+    return this.http.put('https://colorsandgloss.com/todosapi/api/web/v1/todos/update', {
+      userId: todo.userId,
+      id: todo.id,
+      title: todo.title,
+      completed: todo.completed
+    })
       .subscribe((result) => {
-      console.log(result);*/
+      console.log(result);
       this.updatedLocally(todo);
-    /*}, (err) => {
+    }, (err) => {
       console.log(err);
-    });*/
+    });
   }
 
   public deleteTodo(todo: Todo) {
     const todoId = todo.id;
 
-    /* return this.http.delete('https://jsonplaceholder.typicode.com/todos/' + todoId)
+    return this.http.delete('https://colorsandgloss.com/todosapi/api/web/v1/todos/delete/' + todoId)
     .subscribe((result) => {
-      console.log(result); */
+      console.log(result);
       this.deleteLocally(todo);
-    /*}, (err) => {
-      //console.log(err);
-    });*/
+    }, (err) => {
+      console.log(err);
+    });
   }
 
   public getFromLocal(todos: Array<Todo>) {
