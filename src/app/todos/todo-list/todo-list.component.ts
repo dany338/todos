@@ -13,7 +13,7 @@ import { Todo } from '../shared/todo.model';
 })
 export class TodoListComponent implements OnInit {
   public itemLeft: String = '';
-  completed = false;
+  completed = true;
   edit = false;
   todosList: Array<Todo>;
   constructor(
@@ -75,10 +75,22 @@ export class TodoListComponent implements OnInit {
   }
 
   selectAllTodos() {
-    this.completed = !this.completed;
+    if (this.todoService.filterTodos(false).length === 0) {
+      this.completed = false;
+    }
+
     this.todoService.updateCompletedTodos(this.todosList, this.completed).subscribe((result) => {
       console.log(result);
-      this.initializeTodos(this.todoService.completedTodos(this.completed));
+
+      let todosList = this.todosList.filter(todo => todo.completed !== this.completed);
+      for (let index = 0; index < todosList.length; index++) {
+        const todoItem = todosList[index];
+        todoItem.completed = this.completed;
+        this.todoService.updatedLocally(todoItem);
+        const indexOf = todosList.findIndex(task => task.id === todoItem.id);
+        todosList = [...todosList.slice(0, indexOf), todoItem, ...todosList.slice(indexOf + 1)];
+      }
+      this.initializeTodos(todosList);
       this.toastr.success('Todo Completed', 'successfully completed todos');
     }, (err) => {
       console.log(err);
@@ -107,7 +119,8 @@ export class TodoListComponent implements OnInit {
       this.todoService.addTodo(task).subscribe((todo) => {
         const todoItem = Todo.fromJson(todo);
         this.todoService.saveLocally(todoItem);
-        this.todosList = [todoItem, ...this.todosList];
+        const todosList = [todoItem, ...this.todosList];
+        this.initializeTodos(todosList);
         this.showSuccess();
       }, (err) => {
         console.log(err);

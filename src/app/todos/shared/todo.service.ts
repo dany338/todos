@@ -82,17 +82,6 @@ export class TodoService {
     return this.http.get('https://colorsandgloss.com/todosapi/api/web/v1/todos/clear-completed?id=' + valueCompleted);
   }
 
-  public completedTodos(completed: boolean): Array<Todo> {
-    const todosList = this.todosList.filter(todo => todo.completed !== completed);
-    console.log(todosList);
-    for (let index = 0; index < todosList.length; index++) {
-      const todo = todosList[index];
-      todo.completed = completed;
-      this.updatedLocally(todo);
-    }
-    return this.todosList;
-  }
-
   public getFromLocal(): Array<Todo> {
     const items = localStorage.getItem('todosList');
     // tslint:disable-next-line:triple-equals
