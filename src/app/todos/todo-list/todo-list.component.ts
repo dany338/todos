@@ -12,7 +12,7 @@ import { Todo } from '../shared/todo.model';
   styleUrls: ['./todo-list.component.css'],
 })
 export class TodoListComponent implements OnInit {
-
+  public itemLeft: String = '';
   completed = false;
   edit = false;
   todosList: Array<Todo>;
@@ -70,6 +70,8 @@ export class TodoListComponent implements OnInit {
 
   initializeTodos(todos: Array<Todo>) {
     this.todosList = todos;
+    // Calculamos la cantidad de todos abiertos que aun no han sido completados
+    this.itemLeft = this.todoService.filterTodos(false).length + ' item left';
   }
 
   selectAllTodos() {
@@ -86,9 +88,11 @@ export class TodoListComponent implements OnInit {
   selectedTodo(todo: Todo) {
     todo.completed = !todo.completed;
     this.todoService.updateTodo(todo).subscribe((result) => {
-      console.log(result);
       const todoItem = Todo.fromJson(result);
-      this.todoService.completedTodo(todoItem);
+      this.todoService.updatedLocally(todoItem);
+      const index = this.todosList.findIndex(task => task.id === todo.id);
+      const todosList = [...this.todosList.slice(0, index), todo, ...this.todosList.slice(index + 1)];
+      this.initializeTodos(todosList);
       this.toastr.success('Todo Completed', 'successfully completed todo');
     }, (err) => {
       console.log(err);

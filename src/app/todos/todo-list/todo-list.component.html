@@ -1,4 +1,4 @@
-<app-todo-actions (getTodos)="onGetTodos($event)" (clear)="onClear($event)"></app-todo-actions>
+<app-todo-actions (getTodos)="onGetTodos($event)" (clear)="onClear($event)" [itemLeft]="itemLeft"></app-todo-actions>
 <mat-divider></mat-divider>
 <div class="example-container">
   <mat-form-field>
@@ -20,4 +20,4 @@
   </mat-list-item>
 </mat-list>
 <mat-divider></mat-divider>
-<app-todo-actions (clear)="onClear($event)"></app-todo-actions>
+<app-todo-actions (getTodos)="onGetTodos($event)" (clear)="onClear($event)" [itemLeft]="itemLeft"></app-todo-actions>

@@ -7,6 +7,7 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatListModule} from '@angular/material/list';
+import {MatChipsModule} from '@angular/material/chips';
 
 @NgModule({
   imports: [
@@ -17,7 +18,8 @@ import {MatListModule} from '@angular/material/list';
     MatMenuModule,
     MatInputModule,
     MatFormFieldModule,
-    MatListModule
+    MatListModule,
+    MatChipsModule
   ],
   exports: [
     MatButtonModule,
@@ -27,7 +29,8 @@ import {MatListModule} from '@angular/material/list';
     MatMenuModule,
     MatInputModule,
     MatFormFieldModule,
-    MatListModule
+    MatListModule,
+    MatChipsModule
   ],
 })
 export class MaterialModule { }

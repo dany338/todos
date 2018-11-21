@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, Input, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-todo-actions',
@@ -7,13 +7,15 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 })
 export class TodoActionsComponent implements OnInit {
 
-  itemLeft: String = '';
+  @Input() public itemLeft: String;
+
   @Output() clear: EventEmitter<string> = new EventEmitter<string>();
 
   @Output() getTodos: EventEmitter<string> = new EventEmitter<string>();
   constructor() { }
 
   ngOnInit() {
+    console.log(this.itemLeft);
   }
 
   clearCompleted() {
