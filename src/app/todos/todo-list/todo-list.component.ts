@@ -5,6 +5,10 @@ import { TodoService } from '../shared/todo.service';
 import { ToastrService } from 'ngx-toastr';
 // Model
 import { Todo } from '../shared/todo.model';
+// ngrx
+import { Store, Action } from '@ngrx/store';
+import { AppState } from './../../../redux/app.state';
+import { AddAction, UpdateAction, ADDTODO, UPDATETODO, DELETETODO, COMPLETEDTODO } from './../../../redux/todos/todo.actions';
 
 @Component({
   selector: 'app-todo-list',
@@ -20,8 +24,16 @@ export class TodoListComponent implements OnInit {
     private todoService: TodoService,
     private toastr: ToastrService,
     private _route: ActivatedRoute,
-    private _router: Router) { }
+    private _router: Router,
+    private store: Store<AppState>) {
+      this.store.select('todos')
+      .subscribe((todosState) => {
+        this.todosList = todosState;
+        console.log('todosState', todosState);
+      });
+    }
 
+  // utilizando ngrx no es necesario el evento ngOnInit de angular
   ngOnInit() {
 
     const path = this._route.routeConfig.path;
@@ -105,6 +117,14 @@ export class TodoListComponent implements OnInit {
       const index = this.todosList.findIndex(task => task.id === todo.id);
       const todosList = [...this.todosList.slice(0, index), todo, ...this.todosList.slice(index + 1)];
       this.initializeTodos(todosList);
+
+      const action: UpdateAction = {
+        type: COMPLETEDTODO,
+        todo: todo
+      };
+
+      this.store.dispatch(action);
+
       this.toastr.success('Todo Completed', 'successfully completed todo');
     }, (err) => {
       console.log(err);
@@ -116,11 +136,20 @@ export class TodoListComponent implements OnInit {
     $event.stopPropagation();
 
     if (task.trim() !== '') {
+
       this.todoService.addTodo(task).subscribe((todo) => {
         const todoItem = Todo.fromJson(todo);
         this.todoService.saveLocally(todoItem);
         const todosList = [todoItem, ...this.todosList];
         this.initializeTodos(todosList);
+
+        const action: AddAction = {
+          type: ADDTODO,
+          text: task
+        };
+
+        this.store.dispatch(action);
+
         this.showSuccess();
       }, (err) => {
         console.log(err);
@@ -136,12 +165,21 @@ export class TodoListComponent implements OnInit {
 
     if (title.trim() !== '') {
       todo.title = title;
+
       this.todoService.updateTodo(todo).subscribe((result) => {
         console.log(result);
         const todoItem = Todo.fromJson(result);
         this.todoService.updatedLocally(todoItem);
         const index = this.todosList.findIndex(task => task.id === todo.id);
         this.todosList = [...this.todosList.slice(0, index), todo, ...this.todosList.slice(index + 1)];
+
+        const action: UpdateAction = {
+          type: UPDATETODO,
+          todo: todo
+        };
+
+        this.store.dispatch(action);
+
         this.toastr.success('Task Edited [' + title + ']', 'successfully edited task');
       }, (err) => {
         console.log(err);
@@ -160,6 +198,14 @@ export class TodoListComponent implements OnInit {
         this.todoService.deleteLocally(todo);
         const index = this.todosList.findIndex(task => task.id === todo.id);
         this.todosList = [...this.todosList.slice(0, index), ...this.todosList.slice(index + 1)];
+
+        const action: UpdateAction = {
+          type: DELETETODO,
+          todo: todo
+        };
+
+        this.store.dispatch(action);
+
         this.toastr.success('Task Deleted [' + todo.id + ']', 'successfully deleted task');
       }, (err) => {
         console.log(err);
