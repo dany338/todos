@@ -12,6 +12,8 @@ import { TodoActionsComponent } from './todos/todo-actions/todo-actions.componen
 // Http client service
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { ToastrModule } from 'ngx-toastr';
+import { StoreModule } from '@ngrx/store';
+import { AppReducer } from './../redux/app.reducer';
 
 @NgModule({
   declarations: [
@@ -25,7 +27,8 @@ import { ToastrModule } from 'ngx-toastr';
     AppRoutingModule,
     BrowserAnimationsModule,
     ToastrModule.forRoot(), // ToastrModule adde
-    MaterialModule
+    MaterialModule,
+    StoreModule.forRoot(AppReducer)
   ],
   providers: [HttpClient],
   bootstrap: [AppComponent]
