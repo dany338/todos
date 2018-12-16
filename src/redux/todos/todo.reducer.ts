@@ -1,4 +1,3 @@
-import { Action } from '@ngrx/store';
 import { Todo } from '../../app/todos/shared/todo.model';
 import {
   AllActions,
@@ -15,40 +14,50 @@ import {
   SHOW_ALL,
   RESET
 } from './todo.actions';
-export function todoReducer(
-  state: Array<Todo> = [],
+export function todosReducer(
+  oldState: Todo[] = [],
   action: AllActions
-): Array<Todo> {
+): Todo[] {
   if (action === null) {
-    return state;
+    return oldState;
   }
   switch (action.type) {
-    case ADDTODO:
-      const id = this.state.length + 1;
-      const userId = Math.floor(Math.random() * 10) + 1;
-      const completed = false;
-      const todoItem = new Todo(
-        userId,
-        id,
-        action.text,
-        completed
-      );
-      state = [todoItem, ...state];
-      return state;
-    case COMPLETEDTODO:
-      const index3 = state.findIndex(task => task.id === action.todo.id);
-      state = [...state.slice(0, index3), action.todo, ...state.slice(index3 + 1)];
-      return state;
-    case UPDATETODO:
-      const index = state.findIndex(task => task.id === action.todo.id);
-      state = [...state.slice(0, index), action.todo, ...state.slice(index + 1)];
-      return state;
-    case DELETETODO:
-      const index2 = state.findIndex(task => task.id === action.todo.id);
-      state = [...state.slice(0, index2), ...state.slice(index2 + 1)];
-      return state;
+    case ADDTODO: {
+      // No mutar el estado actual - ECS6
+      return [
+        action.todo,
+        ...oldState
+      ];
+    }
+    case COMPLETEDTODO: {
+      const index3 = oldState.findIndex(task => task.id === action.todo.id);
+      return [
+        ...oldState.slice(0, index3),
+        action.todo,
+        ...oldState.slice(index3 + 1)
+      ];
+    }
+    case UPDATETODO: {
+      const index = oldState.findIndex(task => task.id === action.todo.id);
+      return [
+        ...oldState.slice(0, index),
+        action.todo,
+        ...oldState.slice(index + 1)
+      ];
+    }
+    case DELETETODO: {
+      const index2 = oldState.findIndex(task => task.id === action.id);
+      return [
+        ...oldState.slice(0, index2),
+        ...oldState.slice(index2 + 1)
+      ];
+
+      // return oldState.filter((todo) => {
+      //  return todo.id !== action.id;
+      // });
+    }
     case FILTERTODO:
-        let todoListFilter = state;
+        let todoListFilter = oldState;
         switch (action.filter) {
           case SHOW_COMPLETED:
             todoListFilter = todoListFilter.filter(todo => todo.completed === true);
@@ -57,29 +66,31 @@ export function todoReducer(
             todoListFilter = todoListFilter.filter(todo => todo.completed === false);
           break;
           case SHOW_ALL:
-            todoListFilter = state;
+            todoListFilter = oldState;
           break;
         }
       return todoListFilter;
-    case CLEARCOMPLETEDTODO:
-      state = state.filter(todo => todo.completed === true);
-      return state;
-    case SELECTEDALLTODO:
+    case CLEARCOMPLETEDTODO: {
+      return oldState.filter(todo => todo.completed === true);
+    }
+    case SELECTEDALLTODO: {
       let completed2 = true;
-      if (state.filter(todo => todo.completed === false).length === 0) {
+      if (oldState.filter(todo => todo.completed === false).length === 0) {
         completed2 = false;
       }
-      state = state.filter(todo => todo.completed !== completed2);
-      for (let i = 0; i < state.length; i++) {
-        const todoItem2 = state[i];
+      const todosSelectedAll = oldState.filter(todo => todo.completed !== completed2);
+      for (let i = 0; i < todosSelectedAll.length; i++) {
+        const todoItem2 = todosSelectedAll[i];
         todoItem2.completed = this.completed;
       }
-      return state;
+      return todosSelectedAll;
+    }
     case GETFROMJSONPLACEHOLDERTODO:
       return action.todos;
     case RESET:
       return Array<Todo>();
-    default:
-      return state;
+    default: {
+      return oldState;
+    }
   }
 }

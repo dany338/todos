@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
+import { FormControl, Validators } from '@angular/forms';
 
 import { TodoService } from '../shared/todo.service';
 import { ToastrService } from 'ngx-toastr';
@@ -28,22 +29,29 @@ import {
   styleUrls: ['./todo-list.component.css'],
 })
 export class TodoListComponent implements OnInit {
+
+  textField: FormControl; // Formularios reactivos para hacer facil el testeo, controlar el flujo de un formulario
   public itemLeft: String = '';
   completed = true;
   edit = false;
-  todosList: Array<Todo>;
+  todosList: Todo[];
   constructor(
     private todoService: TodoService,
     private toastr: ToastrService,
     private _route: ActivatedRoute,
     private _router: Router,
     private store: Store<AppState>) {
-      this.store.select('todos')
-      .subscribe((todosState) => {
-        this.todosList = todosState;
-        console.log('todosState', todosState);
-      });
+      this.textField = new FormControl('', [Validators.required]);
+      this.readTodoState();
     }
+
+  private readTodoState() {
+    this.store.select('todos')
+    .subscribe((todosState) => {
+      this.todosList = todosState;
+      console.log('todosState', todosState);
+    });
+  }
 
   // utilizando ngrx no es necesario el evento ngOnInit de angular
   ngOnInit() {
@@ -171,17 +179,18 @@ export class TodoListComponent implements OnInit {
     $event.preventDefault();
     $event.stopPropagation();
 
-    if (task.trim() !== '') {
+    if (this.textField.value.trim() !== '') {
 
-      this.todoService.addTodo(task).subscribe((todo) => {
+      this.todoService.addTodo(this.textField.value).subscribe((todo) => {
         const todoItem = Todo.fromJson(todo);
         this.todoService.saveLocally(todoItem);
         // const todosList = [todoItem, ...this.todosList];
         // this.initializeTodos(todosList);
 
-        const action = new AddAction(task);
+        const action = new AddAction(todoItem);
 
         this.store.dispatch(action);
+        this.textField.setValue('');
 
         this.showSuccess();
       }, (err) => {
@@ -206,7 +215,7 @@ export class TodoListComponent implements OnInit {
         // const index = this.todosList.findIndex(task => task.id === todo.id);
         // this.todosList = [...this.todosList.slice(0, index), todo, ...this.todosList.slice(index + 1)];
 
-        const action = new UpdateAction(todo);
+        const action = new UpdateAction(todo.id, todo.title);
 
         this.store.dispatch(action);
 
@@ -229,7 +238,7 @@ export class TodoListComponent implements OnInit {
         // const index = this.todosList.findIndex(task => task.id === todo.id);
         // this.todosList = [...this.todosList.slice(0, index), ...this.todosList.slice(index + 1)];
 
-        const action = new DeletedAction(todo);
+        const action = new DeletedAction(todo.id);
 
         this.store.dispatch(action);
 

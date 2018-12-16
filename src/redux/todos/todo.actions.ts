@@ -29,7 +29,7 @@ export class AddAction implements Action {
   readonly type = ADDTODO;
 
   constructor(
-    public text: string
+    public todo: Todo
   ) { }
 }
 
@@ -37,7 +37,8 @@ export class UpdateAction implements Action {
   readonly type = UPDATETODO;
 
   constructor(
-    public todo: Todo
+    public id: number,
+    public newTitle: string
   ) { }
 }
 
@@ -45,7 +46,7 @@ export class DeletedAction implements Action {
   readonly type = DELETETODO;
 
   constructor(
-    public todo: Todo
+    public id: number
   ) { }
 }
 

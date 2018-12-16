@@ -4,8 +4,9 @@
   <mat-form-field>
     <mat-icon [class]=" (completed) ? 'mat-icon material-icons selected' : 'mat-icon material-icons not-selected'" matPrefix (click)="selectAllTodos()">keyboard_arrow_down</mat-icon>
     <input #newTodo matInput placeholder="What needs to be done?"
-    (keyup.enter)="addTodo(newTodo.value, $event); newTodo.value='';"
-    (blur)="addTodo(newTodo.value, $event); newTodo.value='';" autofocus>
+    (keyup.enter)="addTodo(newTodo.value, $event);"
+    (blur)="addTodo(newTodo.value, $event);"
+    [formControl]="textField" autofocus>
   </mat-form-field>
 </div>
 <mat-divider></mat-divider>
