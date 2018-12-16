@@ -8,7 +8,19 @@ import { Todo } from '../shared/todo.model';
 // ngrx
 import { Store, Action } from '@ngrx/store';
 import { AppState } from './../../../redux/app.state';
-import { AddAction, UpdateAction, ADDTODO, UPDATETODO, DELETETODO, COMPLETEDTODO } from './../../../redux/todos/todo.actions';
+import {
+  AddAction,
+  UpdateAction,
+  FilterAction,
+  ResetAction,
+  CompletedAction,
+  DeletedAction,
+  SelectedAllTodoAction,
+  GetFromJsonPlaceholderTodoAction,
+  SHOW_ACTIVE,
+  SHOW_COMPLETED,
+  SHOW_ALL
+} from './../../../redux/todos/todo.actions';
 
 @Component({
   selector: 'app-todo-list',
@@ -40,8 +52,18 @@ export class TodoListComponent implements OnInit {
 
     if ( path === 'active' ) {
       this.initializeTodos(this.todoService.filterTodos(false));
+
+      const action = new FilterAction(SHOW_ACTIVE);
+
+      this.store.dispatch(action);
+
     } else if ( path === 'completed' ) {
       this.initializeTodos(this.todoService.filterTodos(true));
+
+      const action = new FilterAction(SHOW_COMPLETED);
+
+      this.store.dispatch(action);
+
     } else if ( path === '' ) {
       if (this.todoService.todosList.length > 0 ) {
         this.initializeTodos(this.todoService.getFromLocal());
@@ -52,6 +74,10 @@ export class TodoListComponent implements OnInit {
           this.initializeTodos(todos);
         });
       }
+
+      const action = new FilterAction(SHOW_ALL);
+
+      this.store.dispatch(action);
     }
   }
 
@@ -59,7 +85,8 @@ export class TodoListComponent implements OnInit {
     this.toastr.success('Clear Completed', message);
     this.todoService.clearCompleted(true).subscribe((todos: Array<Todo>) => {
       this.todoService.setToLocal(todos);
-      this.initializeTodos(todos);
+      // this.initializeTodos(todos);
+
     }, (err) => {
       console.log(err);
     });
@@ -68,8 +95,16 @@ export class TodoListComponent implements OnInit {
   onGetTodos(message: string) {
     this.toastr.success('Get Todos', message);
     this.todoService.getTodosFormJSONPlaceholder().subscribe((todos: Array<Todo>) => {
+
+      const action = new ResetAction();
+
+      this.store.dispatch(action);
+
+      const action2 = new GetFromJsonPlaceholderTodoAction(todos);
+      this.store.dispatch(action2);
+
       this.todoService.setToLocal(todos);
-      this.initializeTodos(todos);
+      // this.initializeTodos(todos);
       this.todoService.loadTodosToServer(todos).subscribe((result: Array<Todo>) => {
         console.log(result);
       }, (err) => {
@@ -102,7 +137,11 @@ export class TodoListComponent implements OnInit {
         const indexOf = todosList.findIndex(task => task.id === todoItem.id);
         todosList = [...todosList.slice(0, indexOf), todoItem, ...todosList.slice(indexOf + 1)];
       }
-      this.initializeTodos(todosList);
+      // this.initializeTodos(todosList);
+      const action = new SelectedAllTodoAction();
+
+      this.store.dispatch(action);
+
       this.toastr.success('Todo Completed', 'successfully completed todos');
     }, (err) => {
       console.log(err);
@@ -114,14 +153,11 @@ export class TodoListComponent implements OnInit {
     this.todoService.updateTodo(todo).subscribe((result) => {
       const todoItem = Todo.fromJson(result);
       this.todoService.updatedLocally(todoItem);
-      const index = this.todosList.findIndex(task => task.id === todo.id);
-      const todosList = [...this.todosList.slice(0, index), todo, ...this.todosList.slice(index + 1)];
-      this.initializeTodos(todosList);
+      // const index = this.todosList.findIndex(task => task.id === todo.id);
+      // const todosList = [...this.todosList.slice(0, index), todo, ...this.todosList.slice(index + 1)];
+      // this.initializeTodos(todosList);
 
-      const action: UpdateAction = {
-        type: COMPLETEDTODO,
-        todo: todo
-      };
+      const action = new CompletedAction(todo);
 
       this.store.dispatch(action);
 
@@ -140,13 +176,10 @@ export class TodoListComponent implements OnInit {
       this.todoService.addTodo(task).subscribe((todo) => {
         const todoItem = Todo.fromJson(todo);
         this.todoService.saveLocally(todoItem);
-        const todosList = [todoItem, ...this.todosList];
-        this.initializeTodos(todosList);
+        // const todosList = [todoItem, ...this.todosList];
+        // this.initializeTodos(todosList);
 
-        const action: AddAction = {
-          type: ADDTODO,
-          text: task
-        };
+        const action = new AddAction(task);
 
         this.store.dispatch(action);
 
@@ -170,13 +203,10 @@ export class TodoListComponent implements OnInit {
         console.log(result);
         const todoItem = Todo.fromJson(result);
         this.todoService.updatedLocally(todoItem);
-        const index = this.todosList.findIndex(task => task.id === todo.id);
-        this.todosList = [...this.todosList.slice(0, index), todo, ...this.todosList.slice(index + 1)];
+        // const index = this.todosList.findIndex(task => task.id === todo.id);
+        // this.todosList = [...this.todosList.slice(0, index), todo, ...this.todosList.slice(index + 1)];
 
-        const action: UpdateAction = {
-          type: UPDATETODO,
-          todo: todo
-        };
+        const action = new UpdateAction(todo);
 
         this.store.dispatch(action);
 
@@ -196,13 +226,10 @@ export class TodoListComponent implements OnInit {
       this.todoService.deleteTodo(todo).subscribe((result) => {
         console.log(result);
         this.todoService.deleteLocally(todo);
-        const index = this.todosList.findIndex(task => task.id === todo.id);
-        this.todosList = [...this.todosList.slice(0, index), ...this.todosList.slice(index + 1)];
+        // const index = this.todosList.findIndex(task => task.id === todo.id);
+        // this.todosList = [...this.todosList.slice(0, index), ...this.todosList.slice(index + 1)];
 
-        const action: UpdateAction = {
-          type: DELETETODO,
-          todo: todo
-        };
+        const action = new DeletedAction(todo);
 
         this.store.dispatch(action);
 

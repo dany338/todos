@@ -14,6 +14,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { ToastrModule } from 'ngx-toastr';
 import { StoreModule } from '@ngrx/store';
 import { AppReducer } from './../redux/app.reducer';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,10 @@ import { AppReducer } from './../redux/app.reducer';
     BrowserAnimationsModule,
     ToastrModule.forRoot(), // ToastrModule adde
     MaterialModule,
-    StoreModule.forRoot(AppReducer)
+    StoreModule.forRoot(AppReducer),
+    StoreDevtoolsModule.instrument({
+      maxAge: 25 // Retains last 25 states
+    })
   ],
   providers: [HttpClient],
   bootstrap: [AppComponent]
