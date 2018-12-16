@@ -38,12 +38,16 @@ export function todosReducer(
       ];
     }
     case UPDATETODO: {
-      const index = oldState.findIndex(task => task.id === action.todo.id);
-      return [
-        ...oldState.slice(0, index),
-        action.todo,
-        ...oldState.slice(index + 1)
-      ];
+      return oldState.map((todo) => {
+        if (todo.id === action.id) {
+          return {
+            ...todo,
+            title: action.newTitle
+          };
+        } else {
+          return todo;
+        }
+      });
     }
     case DELETETODO: {
       const index2 = oldState.findIndex(task => task.id === action.id);
