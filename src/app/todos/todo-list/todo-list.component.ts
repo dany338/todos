@@ -31,6 +31,7 @@ import {
 export class TodoListComponent implements OnInit {
 
   textField: FormControl; // Formularios reactivos para hacer facil el testeo, controlar el flujo de un formulario
+  textEditField: FormControl;
   public itemLeft: String = '';
   completed = true;
   edit = false;
@@ -205,8 +206,8 @@ export class TodoListComponent implements OnInit {
     $event.preventDefault();
     $event.stopPropagation();
 
-    if (title.trim() !== '') {
-      todo.title = title;
+    if (this.textField.value.trim() !== '') {
+      todo.title = this.textField.value;
 
       this.todoService.updateTodo(todo).subscribe((result) => {
         console.log(result);
