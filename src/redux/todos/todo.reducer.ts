@@ -2,6 +2,7 @@ import { Todo } from '../../app/todos/shared/todo.model';
 import {
   AllActions,
   ADDTODO,
+  ADD_TODOS,
   UPDATETODO,
   DELETETODO,
   FILTERTODO,
@@ -22,6 +23,9 @@ export function todosReducer(
     return oldState;
   }
   switch (action.type) {
+    case ADD_TODOS: {
+      return action.todos;
+    }
     case ADDTODO: {
       // No mutar el estado actual - ECS6
       return [

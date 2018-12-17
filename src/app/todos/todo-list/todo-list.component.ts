@@ -22,6 +22,7 @@ import {
   SHOW_COMPLETED,
   SHOW_ALL
 } from './../../../redux/todos/todo.actions';
+import { getVisibleTodos } from './../../../redux/todos/todo.selectors';
 
 @Component({
   selector: 'app-todo-list',
@@ -78,7 +79,7 @@ export class TodoListComponent implements OnInit {
         this.initializeTodos(this.todoService.getFromLocal());
       } else {
         // Con la api del listado de todos se cargaron los datos en la api propio que contiene una tabla todo con la estructura requerida
-        this.todoService.getTodos().subscribe((todos: Array<Todo>) => {
+        this.todoService.getTodos('SHOW_ALL').subscribe((todos: Array<Todo>) => {
           this.todoService.setToLocal(todos);
           this.initializeTodos(todos);
         });

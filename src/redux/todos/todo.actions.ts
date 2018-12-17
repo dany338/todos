@@ -12,7 +12,8 @@ export const SHOW_COMPLETED = '[Todos] show filter completed';
 export const SHOW_ACTIVE = '[Todos] show filteractive';
 export const SHOW_ALL = '[Todos] show filter all';
 export const RESET = '[Todos] reset todos';
-
+export const REQUEST_TODOS = '[Todos] REQUEST_TODOS';
+export const ADD_TODOS = '[Todos] ADD_TODOS';
 /*export interface AddAction extends Action {
   text: string;
 }
@@ -24,6 +25,22 @@ export interface UpdateAction extends Action {
 export interface FilterAction extends Action {
   filter: string;
 }*/
+
+export class RequestTodosAction implements Action {
+  readonly type = REQUEST_TODOS;
+
+  constructor(
+    public completed: string
+  ) {}
+}
+
+export class AddTodosAction implements Action {
+  readonly type = ADD_TODOS;
+
+  constructor(
+    public todos: Todo[]
+  ) {}
+}
 
 export class AddAction implements Action {
   readonly type = ADDTODO;
@@ -87,4 +104,4 @@ export class ClearCompletedTodoAction implements Action {
 }
 
 // tslint:disable-next-line:max-line-length
-export type AllActions = AddAction | UpdateAction | DeletedAction | CompletedAction | FilterAction | ResetAction | SelectedAllTodoAction | GetFromJsonPlaceholderTodoAction | ClearCompletedTodoAction;
+export type AllActions = AddTodosAction | AddTodosAction | AddAction | UpdateAction | DeletedAction | CompletedAction | FilterAction | ResetAction | SelectedAllTodoAction | GetFromJsonPlaceholderTodoAction | ClearCompletedTodoAction;

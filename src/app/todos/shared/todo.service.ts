@@ -20,8 +20,8 @@ export class TodoService {
     });
   }
 
-  public getTodos()  {
-    return this.http.get('https://colorsandgloss.com/todosapi/api/web/v1/todos/search');
+  public getTodos(completed: string)  {
+    return this.http.get(`https://colorsandgloss.com/todosapi/api/web/v1/todos/search?completed=${completed}`);
   }
 
   public addTodo(title: string) {

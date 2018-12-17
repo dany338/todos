@@ -14,8 +14,10 @@ import { TodoActionsComponent } from './todos/todo-actions/todo-actions.componen
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { ToastrModule } from 'ngx-toastr';
 import { StoreModule } from '@ngrx/store';
-import { AppReducer } from './../redux/app.reducer';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { EffectsModule } from '@ngrx/effects';
+import { AppReducer } from './../redux/app.reducer';
+import { TodoEffects } from './../redux/todos/todo.effects';
 
 @NgModule({
   declarations: [
@@ -35,7 +37,10 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
     StoreModule.forRoot(AppReducer),
     StoreDevtoolsModule.instrument({
       maxAge: 25 // Retains last 25 states
-    })
+    }),
+    EffectsModule.forRoot([
+      TodoEffects
+    ])
   ],
   providers: [HttpClient],
   bootstrap: [AppComponent]
